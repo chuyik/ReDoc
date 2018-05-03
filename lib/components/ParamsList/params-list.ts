@@ -69,6 +69,28 @@ export class ParamsList extends BaseComponent implements OnInit {
     };
     let params = [];
     paramsPlaces.forEach(place => {
+      if (place === 'query' && paramsMap[place]) {
+        paramsMap[place].forEach(param => {
+          if (param.properties) {
+            let properties = []
+            for (let key in param.properties) {
+              let propertySchema = param.properties[key]
+              if (propertySchema.type === 'array' && propertySchema.items) {
+                propertySchema = propertySchema.items
+              }
+
+              param.properties[key]._displayType = propertySchema.type
+              if (propertySchema.format) {
+                param.properties[key]._displayFormat = `<${propertySchema.format}>`
+              }
+
+              console.log(param.properties[key])
+              properties.push(Object.assign(param.properties[key], {name: key}))
+            }
+            param.properties = properties
+          }
+        })
+      }
       if (paramsMap[place] && paramsMap[place].length) {
         params.push({place: place, placeHint: placeHint[place], params: paramsMap[place]});
       }
