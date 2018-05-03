@@ -107,7 +107,11 @@ const injectors = {
   simpleType: {
     check: (propertySchema) => {
       if (propertySchema.type === 'object') {
-        return propertySchema.type;
+        if (propertySchema.properties && propertySchema.in === 'query') {
+          return propertySchema.type;
+        }
+        return (!propertySchema.properties || !Object.keys(propertySchema.properties).length)
+          && (typeof propertySchema.additionalProperties !== 'object');
       }
       return (propertySchema.type !== 'array') && propertySchema.type;
     },
